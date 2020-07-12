@@ -2,10 +2,7 @@ package picture.repository.impl;
 
 import picture.model.Picture;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -22,8 +19,13 @@ public class PictureRepository implements IPictureRepository {
 
     @Override
     public Picture findById(Long id) {
-        TypedQuery<Picture> query = em.createQuery("select p FROM Picture as p where p.id = :id", Picture.class);
-        return query.getSingleResult();
+        TypedQuery<Picture> query = em.createQuery("select p FROM Picture as p where p.id=:id", Picture.class);
+        query.setParameter("id",id);
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Override
@@ -49,17 +51,10 @@ public class PictureRepository implements IPictureRepository {
             picture.setLikes(picture.getLikes()+1);
             em.merge(picture);
         }
-
-
-
-////        EntityManagerFactory emf = null;
-////        em = emf.createEntityManager();
-//        em.getTransaction();
-//        TypedQuery<Picture> query = em.createQuery("UPDATE Picture as p SET p.likes = p.likes + 1 where p.id = :id", Picture.class);
-////        query.setParameter("newlike", 1);
-////        query.setParameter("id",id);
-//        query.executeUpdate();
-//        em.getTransaction().commit();
-//        em.close();
     }
+
+//    public static void main(String[] args) {
+//        PictureRepository pictureRepository = new PictureRepository();
+//        System.out.println(pictureRepository.findById(12L).getAuthor());
+//    }
 }
